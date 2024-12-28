@@ -83,13 +83,8 @@ class _MyAppState extends State<MyApp> {
                   child: Text('Stop Location Service')),
               ElevatedButton(
                   onPressed: () {
-                    Future.delayed(const Duration(seconds: 5), (){
-                      BackgroundLocation.isServiceRunning().then((value) {
-                        setState(() {
-                          serviceRunning = value;
-                        });
-                        print('Is Running: $value');
-                      });
+                    Future.delayed(const Duration(seconds: 0), (){
+                      BackgroundLocation.startAlarm();
                     });
                   },
                   child: Text('Check service')),

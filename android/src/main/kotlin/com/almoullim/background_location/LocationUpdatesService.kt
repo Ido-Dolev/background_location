@@ -218,7 +218,7 @@ class LocationUpdatesService : Service() {
         }
     }
 
-    fun testAlarmSound() {
+    fun testAlarmSound(): Boolean {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (volumeService != null) {
             println("DOLEV stopping alarm")
@@ -273,6 +273,7 @@ class LocationUpdatesService : Service() {
             )
             volumeService?.requestAudioFocus()
         }
+        return true
     }
 
     fun removeLocationUpdates() {

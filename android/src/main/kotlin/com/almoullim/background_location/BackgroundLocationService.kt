@@ -117,11 +117,6 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
     }
 
     private fun isLocationServiceRunning(): Boolean {
-
-        if (service != null) {
-            service?.testAlarmSound()
-        }
-
         val manager: ActivityManager = context!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
             if (LocationUpdatesService::class.java.getName() == service.service.getClassName()) {
@@ -174,6 +169,7 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
             "is_service_running" -> result.success(isLocationServiceRunning())
             "set_android_notification" -> result.success(setAndroidNotification(call.argument("title"),call.argument("message"),call.argument("icon")))
             "set_configuration" -> result.success(setConfiguration(call.argument<String>("interval")?.toLongOrNull()))
+            "start_alarm" -> result.success(service?.testAlarmSound())
             else -> result.notImplemented()
         }
     }

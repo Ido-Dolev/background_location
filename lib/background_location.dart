@@ -45,6 +45,12 @@ class BackgroundLocation {
     }
   }
 
+  /// Check if the location update service is running
+  static Future<bool> startAlarm() async {
+    var result = await _channel.invokeMethod('start_alarm');
+    return result == true;
+  }
+
   /// Get the current location once.
   Future<Location> getCurrentLocation() async {
     var completer = Completer<Location>();
