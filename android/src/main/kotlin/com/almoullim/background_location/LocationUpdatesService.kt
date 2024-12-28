@@ -1,5 +1,10 @@
 package com.almoullim.background_location
 
+import com.almoullim.background_location.VolumeService
+import com.almoullim.background_location.VibrationService
+import com.almoullim.background_location.AudioService
+import com.almoullim.background_location.NotificationHandler
+
 import android.annotation.SuppressLint
 import android.app.*
 import android.location.*
@@ -16,10 +21,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.common.*
+import android.app.PendingIntent
 
 class LocationUpdatesService : Service() {
 
     private var forceLocationManager: Boolean = false
+    private var volumeService: VolumeService? = null
+    private var vibrationService: VibrationService? = null
+    private var audioService: AudioService? = null
 
     override fun onBind(intent: Intent?): IBinder {
         val distanceFilter = intent?.getDoubleExtra("distance_filter", 0.0)
@@ -32,6 +41,22 @@ class LocationUpdatesService : Service() {
             createLocationRequest(0.0)
         }
         return mBinder
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent == null) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        val id = intent.getIntExtra("id", 0)
+        val action = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_ACTION)
+
+        if (action == "STOP_ALARM" && id != 0) {
+            testAlarmSound()
+            return START_NOT_STICKY
+        }
+        return START_STICKY
     }
 
     private val mBinder = LocalBinder()
@@ -190,6 +215,63 @@ class LocationUpdatesService : Service() {
         } else {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(NOTIFICATION_ID, notification.build())
+        }
+    }
+
+    fun testAlarmSound() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (volumeService != null) {
+            println("DOLEV stopping alarm")
+            volumeService?.restorePreviousVolume(true)
+            volumeService?.abandonAudioFocus()
+            volumeService = null
+
+            vibrationService?.stopVibrating()
+            vibrationService = null
+
+            audioService?.stopAudio(134)
+            audioService?.cleanUp()
+            audioService = null
+
+            notificationManager.cancel(134)
+        }
+        else {
+            println("DOLEV starting alarm")
+
+            val notificationHandler = NotificationHandler(this)
+            val appIntent =
+                applicationContext.packageManager.getLaunchIntentForPackage(applicationContext.packageName)
+            val pendingIntent = PendingIntent.getActivity(
+                this,
+                134,
+                appIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            val notification = notificationHandler.buildNotification(
+                true,
+                pendingIntent,
+                134
+            )
+            notificationManager.notify(134, notification)
+
+            vibrationService = VibrationService(this)
+            volumeService = VolumeService(this)
+            audioService = AudioService(this)
+
+            audioService?.playAudio(
+                134,
+                "assets/mozart.mp3",
+                true,
+                null,
+                listOf<Int>()
+            )
+            vibrationService?.startVibrating(longArrayOf(0, 500, 500), 1)
+            volumeService?.setVolume(
+                0.3,
+                true,
+                true,
+            )
+            volumeService?.requestAudioFocus()
         }
     }
 

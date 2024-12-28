@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
                     );
                     //await BackgroundLocation.setAndroidConfiguration(1000);
                     await BackgroundLocation.startLocationService(
-                        distanceFilter: 20);
+                        distanceFilter: 0);
                     BackgroundLocation.getLocationUpdates((location) {
                       setState(() {
                         latitude = location.latitude.toString();
@@ -83,11 +83,13 @@ class _MyAppState extends State<MyApp> {
                   child: Text('Stop Location Service')),
               ElevatedButton(
                   onPressed: () {
-                    BackgroundLocation.isServiceRunning().then((value) {
-                      setState(() {
-                        serviceRunning = value;
+                    Future.delayed(const Duration(seconds: 5), (){
+                      BackgroundLocation.isServiceRunning().then((value) {
+                        setState(() {
+                          serviceRunning = value;
+                        });
+                        print('Is Running: $value');
                       });
-                      print('Is Running: $value');
                     });
                   },
                   child: Text('Check service')),

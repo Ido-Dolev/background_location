@@ -117,6 +117,11 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
     }
 
     private fun isLocationServiceRunning(): Boolean {
+
+        if (service != null) {
+            service?.testAlarmSound()
+        }
+
         val manager: ActivityManager = context!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
             if (LocationUpdatesService::class.java.getName() == service.service.getClassName()) {
