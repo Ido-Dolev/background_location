@@ -77,6 +77,7 @@ class LocationUpdatesService : Service() {
         private const val CHANNEL_ID = "channel_01"
         internal const val ACTION_BROADCAST = "$PACKAGE_NAME.broadcast"
         internal const val EXTRA_LOCATION = "$PACKAGE_NAME.location"
+        internal const val EXTRA_STOP_ALARM = "$PACKAGE_NAME.stop_alarm_from_service"
         private const val EXTRA_STARTED_FROM_NOTIFICATION = "$PACKAGE_NAME.started_from_notification"
         var UPDATE_INTERVAL_IN_MILLISECONDS: Long = 1000
         var FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2
@@ -289,6 +290,10 @@ class LocationUpdatesService : Service() {
         vibrationService?.stopVibrating()
 
         audioService?.stopAudio(id)
+
+        val intent = Intent(ACTION_BROADCAST)
+        intent.putExtra(EXTRA_STOP_ALARM, id)
+        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
 
         return true
     }

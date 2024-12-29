@@ -73,6 +73,11 @@ class _MyAppState extends State<MyApp> {
                         Time: $time
                         IsServiceRunning: $serviceRunning
                       ''');
+                    }, (int id) {
+                      print('''\n
+                        Location service stopped with id: $id
+                      ''');
+                      BackgroundLocation.stopLocationService();
                     });
                   },
                   child: Text('Start Location Service')),

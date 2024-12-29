@@ -78,6 +78,16 @@ class BackgroundLocation {
     return result == true;
   }
 
+  /// Register to stop alarm from notification
+  static void registerStopAlarmFromNotification(Function(int) stopAlarm) {
+    // _channel.setMethodCallHandler((MethodCall methodCall) async {
+    //   if (methodCall.method == 'stop_alarm') {
+    //     print("Stoppppppping");
+    //   }
+    // });
+  }
+
+
   /// Get the current location once.
   Future<Location> getCurrentLocation() async {
     var completer = Completer<Location>();
@@ -94,7 +104,7 @@ class BackgroundLocation {
         isMock: location.isMock,
       );
       completer.complete(loc);
-    });
+    }, (i){});
 
     return completer.future;
   }
@@ -103,7 +113,7 @@ class BackgroundLocation {
 
   /// Register a function to recive location updates as long as the location
   /// service has started
-  static void getLocationUpdates(Function(Location) location) {
+  static void getLocationUpdates(Function(Location) location, Function(int) stopAlarm) {
     // add a handler on the channel to recive updates from the native classes
     _channel.setMethodCallHandler((MethodCall methodCall) async {
       if (methodCall.method == 'location') {
@@ -120,6 +130,9 @@ class BackgroundLocation {
               time: locationData['time'],
               isMock: locationData['is_mock']),
         );
+      } else if (methodCall.method == 'stop_alarm_from_service') {
+        var idData = Map.from(methodCall.arguments);
+        stopAlarm(idData['id']);
       }
     });
   }

@@ -227,21 +227,35 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
 
     private inner class MyReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val location = intent.getParcelableExtra<Location>(LocationUpdatesService.EXTRA_LOCATION)
-            if (location != null) {
-                val locationMap = HashMap<String, Any>()
-                locationMap["latitude"] = location.latitude
-                locationMap["longitude"] = location.longitude
-                locationMap["altitude"] = location.altitude
-                locationMap["accuracy"] = location.accuracy.toDouble()
-                locationMap["bearing"] = location.bearing.toDouble()
-                locationMap["speed"] = location.speed.toDouble()
-                locationMap["time"] = location.time.toDouble()
-                locationMap["is_mock"] = location.isFromMockProvider
-                channel.invokeMethod("location", locationMap, null)
+            // Check if the intent contains the EXTRA_LOCATION
+            if (intent.hasExtra(LocationUpdatesService.EXTRA_LOCATION)) {
+                val location = intent.getParcelableExtra<Location>(LocationUpdatesService.EXTRA_LOCATION)
+                location?.let {
+                    val locationMap = HashMap<String, Any>().apply {
+                        put("latitude", it.latitude)
+                        put("longitude", it.longitude)
+                        put("altitude", it.altitude)
+                        put("accuracy", it.accuracy.toDouble())
+                        put("bearing", it.bearing.toDouble())
+                        put("speed", it.speed.toDouble())
+                        put("time", it.time.toDouble())
+                        put("is_mock", it.isFromMockProvider)
+                    }
+                    channel.invokeMethod("location", locationMap, null)
+                }
+            } else if (intent.hasExtra(LocationUpdatesService.EXTRA_STOP_ALARM)) {
+                val id = intent.getIntExtra(LocationUpdatesService.EXTRA_STOP_ALARM, 0)
+                val idMap = HashMap<String, Any>().apply {
+                    put("id", id)
+                }
+                channel.invokeMethod("stop_alarm_from_service", idMap, null)
+            } else {
+                // Handle the case where EXTRA_LOCATION is missing, if necessary
+                Log.w("MyReceiver", "Intent does not contain EXTRA_LOCATION")
             }
         }
     }
+
 
     /**
      * Handle the response from a permission request
