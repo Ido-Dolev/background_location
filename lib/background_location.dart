@@ -46,8 +46,25 @@ class BackgroundLocation {
   }
 
   /// Check if the location update service is running
-  static Future<bool> startAlarm() async {
-    var result = await _channel.invokeMethod('start_alarm');
+  static Future<bool> startAlarm({
+    required int id,
+    required bool vibrate,
+    required String sound,
+    required bool volumeEnforced,
+    required double volume,
+    required String notificationTitle,
+    required String notificationBody,
+    required String stopButtonText}) async {
+    var result = await _channel.invokeMethod('start_alarm', <String, dynamic>{
+      'id': id,
+      'vibrate': vibrate,
+      'sound': sound,
+      'volumeEnforced': volumeEnforced,
+      'volume': volume,
+      'notification_title': notificationTitle,
+      'notification_body': notificationBody,
+      'stop_button_text': stopButtonText,
+    });
     return result == true;
   }
 

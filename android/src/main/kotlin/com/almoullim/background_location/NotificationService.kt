@@ -42,7 +42,10 @@ class NotificationHandler(private val context: Context) {
     fun buildNotification(
         fullScreen: Boolean,
         pendingIntent: PendingIntent,
-        alarmId: Int
+        alarmId: Int,
+        notification_title: String,
+        notification_body: String,
+        stop_button_text: String
     ): Notification {
         val defaultIconResId =
             context.packageManager.getApplicationInfo(context.packageName, 0).icon
@@ -72,8 +75,8 @@ class NotificationHandler(private val context: Context) {
 
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(iconResId)
-            .setContentTitle("Hi2")
-            .setContentText("HI3")
+            .setContentTitle(notification_title)
+            .setContentText(notification_body)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
@@ -83,7 +86,7 @@ class NotificationHandler(private val context: Context) {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         notificationBuilder.setFullScreenIntent(pendingIntent, true)
-        notificationBuilder.addAction(0, "Stop", stopPendingIntent)
+        notificationBuilder.addAction(0, stop_button_text, stopPendingIntent)
 
         return notificationBuilder.build()
     }

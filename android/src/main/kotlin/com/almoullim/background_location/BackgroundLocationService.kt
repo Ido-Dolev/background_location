@@ -169,7 +169,16 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
             "is_service_running" -> result.success(isLocationServiceRunning())
             "set_android_notification" -> result.success(setAndroidNotification(call.argument("title"),call.argument("message"),call.argument("icon")))
             "set_configuration" -> result.success(setConfiguration(call.argument<String>("interval")?.toLongOrNull()))
-            "start_alarm" -> result.success(service?.testAlarmSound())
+            "start_alarm" -> result.success(service?.testAlarmSound(
+                call.argument("id"),
+                call.argument("vibrate"),
+                call.argument("sound"),
+                call.argument("volumeEnforced"),
+                call.argument("volume"),
+                call.argument("notification_title"),
+                call.argument("notification_body"),
+                call.argument("stop_button_text")
+            ))
             else -> result.notImplemented()
         }
     }

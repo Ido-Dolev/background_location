@@ -84,7 +84,16 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                   onPressed: () {
                     Future.delayed(const Duration(seconds: 0), (){
-                      BackgroundLocation.startAlarm();
+                      BackgroundLocation.startAlarm(
+                        id: DateTime.now().millisecondsSinceEpoch % 10000,
+                        vibrate: true,
+                        sound: 'assets/mozart.mp3',
+                        volumeEnforced: true,
+                        volume: 0.2,
+                        notificationTitle: 'Alarm example',
+                        notificationBody: 'Alarm with location',
+                        stopButtonText: 'Stop',
+                      );
                     });
                   },
                   child: Text('Check service')),

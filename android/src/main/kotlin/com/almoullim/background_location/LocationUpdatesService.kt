@@ -53,7 +53,7 @@ class LocationUpdatesService : Service() {
         val action = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_ACTION)
 
         if (action == "STOP_ALARM" && id != 0) {
-            testAlarmSound()
+            testAlarmSound(id, null, null, null, null, null, null, null)
             return START_NOT_STICKY
         }
         return START_STICKY
@@ -218,10 +218,21 @@ class LocationUpdatesService : Service() {
         }
     }
 
-    fun testAlarmSound(): Boolean {
+    fun testAlarmSound(id: Int?,
+                       vibrate: Boolean?,
+                       sound: String?,
+                       volumeEnforced: Boolean?,
+                       volume: Double?,
+                       notification_title: String?,
+                       notification_body: String?,
+                       stop_button_text: String?,
+                       ): Boolean {
+        if (id == null) {
+            return false
+        }
+
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (volumeService != null) {
-            println("DOLEV stopping alarm")
             volumeService?.restorePreviousVolume(true)
             volumeService?.abandonAudioFocus()
             volumeService = null
@@ -229,49 +240,58 @@ class LocationUpdatesService : Service() {
             vibrationService?.stopVibrating()
             vibrationService = null
 
-            audioService?.stopAudio(134)
+            audioService?.stopAudio(id)
             audioService?.cleanUp()
             audioService = null
 
-            notificationManager.cancel(134)
+            notificationManager.cancel(id)
         }
         else {
-            println("DOLEV starting alarm")
-
+            if (vibrate == null || sound == null || volumeEnforced == null || volume == null ||
+                notification_title == null || notification_body == null || stop_button_text == null) {
+                return false
+            }
             val notificationHandler = NotificationHandler(this)
             val appIntent =
                 applicationContext.packageManager.getLaunchIntentForPackage(applicationContext.packageName)
             val pendingIntent = PendingIntent.getActivity(
                 this,
-                134,
+                id,
                 appIntent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             val notification = notificationHandler.buildNotification(
                 true,
                 pendingIntent,
-                134
+                id,
+                notification_title,
+                notification_body,
+                stop_button_text
             )
-            notificationManager.notify(134, notification)
+            notificationManager.notify(id, notification)
 
             vibrationService = VibrationService(this)
             volumeService = VolumeService(this)
             audioService = AudioService(this)
 
             audioService?.playAudio(
-                134,
-                "assets/mozart.mp3",
+                id,
+                sound,
                 true,
                 null,
                 listOf<Int>()
             )
-            vibrationService?.startVibrating(longArrayOf(0, 500, 500), 1)
-            volumeService?.setVolume(
-                0.3,
-                true,
-                true,
-            )
-            volumeService?.requestAudioFocus()
+            if (vibrate) {
+                vibrationService?.startVibrating(longArrayOf(0, 500, 500), 1)
+            }
+            if (volumeEnforced) {
+                volumeService?.setVolume(
+                    volume,
+                    true,
+                    true,
+                )
+                volumeService?.requestAudioFocus()
+            }
         }
         return true
     }
