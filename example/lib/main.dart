@@ -77,7 +77,6 @@ class _MyAppState extends State<MyApp> {
                       print('''\n
                         Location service stopped with id: $id
                       ''');
-                      BackgroundLocation.stopLocationService();
                     });
                   },
                   child: Text('Start Location Service')),
@@ -98,6 +97,7 @@ class _MyAppState extends State<MyApp> {
                         notificationTitle: 'Alarm example',
                         notificationBody: 'Alarm with location',
                         stopButtonText: 'Stop',
+                        stopService: true
                       );
                     });
                   },

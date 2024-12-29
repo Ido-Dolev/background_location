@@ -25,9 +25,14 @@ class BackgroundLocation {
   }
 
   /// Start receiving location updated
-  static Future<dynamic> startLocationService({double distanceFilter = 0.0, bool forceAndroidLocationManager = false}) async {
-    return await _channel.invokeMethod('start_location_service',
-        <String, dynamic>{'distance_filter': distanceFilter, 'force_location_manager': forceAndroidLocationManager});
+  static Future<dynamic> startLocationService(
+      {double distanceFilter = 0.0,
+      bool forceAndroidLocationManager = false}) async {
+    return await _channel
+        .invokeMethod('start_location_service', <String, dynamic>{
+      'distance_filter': distanceFilter,
+      'force_location_manager': forceAndroidLocationManager
+    });
   }
 
   static Future<dynamic> setAndroidNotification(
@@ -47,15 +52,16 @@ class BackgroundLocation {
   }
 
   /// Check if the location update service is running
-  static Future<bool> startAlarm({
-    required int id,
-    required bool vibrate,
-    required String sound,
-    required bool volumeEnforced,
-    required double volume,
-    required String notificationTitle,
-    required String notificationBody,
-    required String stopButtonText}) async {
+  static Future<bool> startAlarm(
+      {required int id,
+      required bool vibrate,
+      required String sound,
+      required bool volumeEnforced,
+      required double volume,
+      required String notificationTitle,
+      required String notificationBody,
+      required String stopButtonText,
+      bool? stopService = false}) async {
     currentAlarmId = id;
     var result = await _channel.invokeMethod('start_alarm', <String, dynamic>{
       'id': id,
@@ -66,6 +72,7 @@ class BackgroundLocation {
       'notification_title': notificationTitle,
       'notification_body': notificationBody,
       'stop_button_text': stopButtonText,
+      'stop_service': stopService
     });
     return result == true;
   }
@@ -87,7 +94,6 @@ class BackgroundLocation {
     // });
   }
 
-
   /// Get the current location once.
   Future<Location> getCurrentLocation() async {
     var completer = Completer<Location>();
@@ -104,16 +110,15 @@ class BackgroundLocation {
         isMock: location.isMock,
       );
       completer.complete(loc);
-    }, (i){});
+    }, (i) {});
 
     return completer.future;
   }
 
-
-
   /// Register a function to recive location updates as long as the location
   /// service has started
-  static void getLocationUpdates(Function(Location) location, Function(int) stopAlarm) {
+  static void getLocationUpdates(
+      Function(Location) location, Function(int) stopAlarm) {
     // add a handler on the channel to recive updates from the native classes
     _channel.setMethodCallHandler((MethodCall methodCall) async {
       if (methodCall.method == 'location') {

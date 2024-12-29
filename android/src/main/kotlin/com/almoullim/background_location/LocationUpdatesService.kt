@@ -46,11 +46,12 @@ class LocationUpdatesService : Service() {
         }
 
         val id = intent.getIntExtra("id", 0)
+        val stopService = intent.getBooleanExtra("stop_service", false)
         val action = intent.getStringExtra(AlarmReceiver.EXTRA_ALARM_ACTION)
 
         if (action == "STOP_ALARM" && id != 0) {
             println("DOLEV on stop!")
-            stopAlarm(id)
+            stopAlarm(id, stopService)
             return START_NOT_STICKY
         }
         return START_STICKY
@@ -78,6 +79,7 @@ class LocationUpdatesService : Service() {
         internal const val ACTION_BROADCAST = "$PACKAGE_NAME.broadcast"
         internal const val EXTRA_LOCATION = "$PACKAGE_NAME.location"
         internal const val EXTRA_STOP_ALARM = "$PACKAGE_NAME.stop_alarm_from_service"
+        internal const val EXTRA_STOP_SERVICE_ON_ALARM = "$PACKAGE_NAME.stop_service_on_alarm"
         private const val EXTRA_STARTED_FROM_NOTIFICATION = "$PACKAGE_NAME.started_from_notification"
         var UPDATE_INTERVAL_IN_MILLISECONDS: Long = 1000
         var FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2
@@ -216,15 +218,17 @@ class LocationUpdatesService : Service() {
         }
     }
 
-    fun startAlarm(id: Int?,
-                   vibrate: Boolean?,
-                   sound: String?,
-                   volumeEnforced: Boolean?,
-                   volume: Double?,
-                   notification_title: String?,
-                   notification_body: String?,
-                   stop_button_text: String?,
-                       ): Boolean {
+    fun startAlarm(
+        id: Int?,
+        vibrate: Boolean?,
+        sound: String?,
+        volumeEnforced: Boolean?,
+        volume: Double?,
+        notificationTitle: String?,
+        notificationBody: String?,
+        stopButtonText: String?,
+        stopService: Boolean?
+    ): Boolean {
         if (id == null || isRinging) {
             return false
         }
@@ -234,7 +238,7 @@ class LocationUpdatesService : Service() {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (vibrate == null || sound == null || volumeEnforced == null || volume == null ||
-            notification_title == null || notification_body == null || stop_button_text == null) {
+            notificationTitle == null || notificationBody == null || stopButtonText == null) {
             return false
         }
         isRinging = true
@@ -251,9 +255,10 @@ class LocationUpdatesService : Service() {
             true,
             pendingIntent,
             id,
-            notification_title,
-            notification_body,
-            stop_button_text
+            notificationTitle,
+            notificationBody,
+            stopButtonText,
+            stopService
         )
         notificationManager.notify(id, notification)
 
@@ -277,8 +282,8 @@ class LocationUpdatesService : Service() {
         return true
     }
 
-    fun stopAlarm(id: Int?): Boolean {
-        if (id == null || !isRinging) {
+    fun stopAlarm(id: Int?, stopService: Boolean?): Boolean {
+        if (id == null || stopService == null || !isRinging) {
             return false
         }
         isRinging = false
@@ -293,6 +298,7 @@ class LocationUpdatesService : Service() {
 
         val intent = Intent(ACTION_BROADCAST)
         intent.putExtra(EXTRA_STOP_ALARM, id)
+        intent.putExtra(EXTRA_STOP_SERVICE_ON_ALARM, stopService)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
 
         return true

@@ -176,9 +176,10 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
                 call.argument("volume"),
                 call.argument("notification_title"),
                 call.argument("notification_body"),
-                call.argument("stop_button_text")
+                call.argument("stop_button_text"),
+                call.argument("stop_service")
             ))
-            "stop_alarm" -> result.success(service?.stopAlarm(call.argument("id")))
+            "stop_alarm" -> result.success(service?.stopAlarm(call.argument("id"), call.argument("stop_service")))
             else -> result.notImplemented()
         }
     }
@@ -249,6 +250,10 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
                     put("id", id)
                 }
                 channel.invokeMethod("stop_alarm_from_service", idMap, null)
+                val stopService = intent.getBooleanExtra(LocationUpdatesService.EXTRA_STOP_SERVICE_ON_ALARM, false)
+                if (stopService) {
+                    stopLocationService()
+                }
             } else {
                 // Handle the case where EXTRA_LOCATION is missing, if necessary
                 Log.w("MyReceiver", "Intent does not contain EXTRA_LOCATION")

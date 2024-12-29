@@ -45,7 +45,8 @@ class NotificationHandler(private val context: Context) {
         alarmId: Int,
         notification_title: String,
         notification_body: String,
-        stop_button_text: String
+        stop_button_text: String,
+        stopService: Boolean?
     ): Notification {
         val defaultIconResId =
             context.packageManager.getApplicationInfo(context.packageName, 0).icon
@@ -65,6 +66,7 @@ class NotificationHandler(private val context: Context) {
         val stopIntent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmReceiver.ACTION_ALARM_STOP
             putExtra("id", alarmId)
+            putExtra("stop_service", stopService)
         }
         val stopPendingIntent = PendingIntent.getBroadcast(
             context,
