@@ -10,7 +10,7 @@ class BackgroundLocation {
   // The channel to be used for communication.
   // This channel is also refrenced inside both iOS and Abdroid classes
   static const MethodChannel _channel =
-      MethodChannel('com.almoullim.background_location/methods');
+  MethodChannel('com.almoullim.background_location/methods');
   static final ValueNotifier<int> currentAlarmId = ValueNotifier<int>(0);
 
   /// Stop receiving location updates
@@ -25,9 +25,8 @@ class BackgroundLocation {
   }
 
   /// Start receiving location updated
-  static Future<dynamic> startLocationService(
-      {double distanceFilter = 0.0,
-      bool forceAndroidLocationManager = false}) async {
+  static Future<dynamic> startLocationService({double distanceFilter = 0.0,
+    bool forceAndroidLocationManager = false}) async {
     return await _channel
         .invokeMethod('start_location_service', <String, dynamic>{
       'distance_filter': distanceFilter,
@@ -52,16 +51,15 @@ class BackgroundLocation {
   }
 
   /// Check if the location update service is running
-  static Future<bool> startAlarm(
-      {required int id,
-      required bool vibrate,
-      required String sound,
-      required bool volumeEnforced,
-      required double volume,
-      required String notificationTitle,
-      required String notificationBody,
-      required String stopButtonText,
-      bool? stopService = false}) async {
+  static Future<bool> startAlarm({required int id,
+    required bool vibrate,
+    required String sound,
+    required bool volumeEnforced,
+    required double volume,
+    required String notificationTitle,
+    required String notificationBody,
+    required String stopButtonText,
+    bool? stopService = false}) async {
     currentAlarmId.value = id;
     var result = await _channel.invokeMethod('start_alarm', <String, dynamic>{
       'id': id,
@@ -77,9 +75,10 @@ class BackgroundLocation {
     return result == true;
   }
 
-  static Future<bool> stopAlarm({int? id}) async {
-    var result = await _channel.invokeMethod('stop_alarm', <String, int>{
+  static Future<bool> stopAlarm({int? id, bool stopService = false}) async {
+    var result = await _channel.invokeMethod('stop_alarm', <String, dynamic>{
       'id': id ?? currentAlarmId.value,
+      'stop_service': stopService
     });
     currentAlarmId.value = 0;
     return result == true;
@@ -117,8 +116,8 @@ class BackgroundLocation {
 
   /// Register a function to recive location updates as long as the location
   /// service has started
-  static void getLocationUpdates(
-      Function(Location) location, Function(int) stopAlarm) {
+  static void getLocationUpdates(Function(Location) location,
+      Function(int) stopAlarm) {
     // add a handler on the channel to recive updates from the native classes
     _channel.setMethodCallHandler((MethodCall methodCall) async {
       if (methodCall.method == 'location') {
@@ -155,15 +154,14 @@ class Location {
   double? time;
   bool? isMock;
 
-  Location(
-      {@required this.longitude,
-      @required this.latitude,
-      @required this.altitude,
-      @required this.accuracy,
-      @required this.bearing,
-      @required this.speed,
-      @required this.time,
-      @required this.isMock});
+  Location({@required this.longitude,
+    @required this.latitude,
+    @required this.altitude,
+    @required this.accuracy,
+    @required this.bearing,
+    @required this.speed,
+    @required this.time,
+    @required this.isMock});
 
   Map<String, dynamic> toMap() {
     var obj = {
