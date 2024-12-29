@@ -84,6 +84,7 @@ class NotificationHandler(private val context: Context) {
             .setContentIntent(pendingIntent)
             .setSound(null)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setDeleteIntent(stopPendingIntent)
 
         notificationBuilder.setFullScreenIntent(pendingIntent, true)
         notificationBuilder.addAction(0, stop_button_text, stopPendingIntent)

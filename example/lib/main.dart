@@ -96,12 +96,12 @@ class _MyAppState extends State<MyApp> {
                       );
                     });
                   },
-                  child: Text('Check service')),
+                  child: Text('Start Alarm')),
               ElevatedButton(
                   onPressed: () {
-                    getCurrentLocation();
+                    BackgroundLocation.stopAlarm();
                   },
-                  child: Text('Get Current Location')),
+                  child: Text('Stop Alarm')),
             ],
           ),
         ),

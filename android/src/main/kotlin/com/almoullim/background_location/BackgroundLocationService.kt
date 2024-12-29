@@ -14,7 +14,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
@@ -169,7 +168,7 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
             "is_service_running" -> result.success(isLocationServiceRunning())
             "set_android_notification" -> result.success(setAndroidNotification(call.argument("title"),call.argument("message"),call.argument("icon")))
             "set_configuration" -> result.success(setConfiguration(call.argument<String>("interval")?.toLongOrNull()))
-            "start_alarm" -> result.success(service?.testAlarmSound(
+            "start_alarm" -> result.success(service?.startAlarm(
                 call.argument("id"),
                 call.argument("vibrate"),
                 call.argument("sound"),
@@ -179,6 +178,7 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
                 call.argument("notification_body"),
                 call.argument("stop_button_text")
             ))
+            "stop_alarm" -> result.success(service?.stopAlarm(call.argument("id")))
             else -> result.notImplemented()
         }
     }
