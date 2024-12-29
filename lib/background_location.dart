@@ -11,7 +11,7 @@ class BackgroundLocation {
   // This channel is also refrenced inside both iOS and Abdroid classes
   static const MethodChannel _channel =
       MethodChannel('com.almoullim.background_location/methods');
-  static int currentAlarmId = 0;
+  static final ValueNotifier<int> currentAlarmId = ValueNotifier<int>(0);
 
   /// Stop receiving location updates
   static Future<dynamic> stopLocationService() async {
@@ -62,7 +62,7 @@ class BackgroundLocation {
       required String notificationBody,
       required String stopButtonText,
       bool? stopService = false}) async {
-    currentAlarmId = id;
+    currentAlarmId.value = id;
     var result = await _channel.invokeMethod('start_alarm', <String, dynamic>{
       'id': id,
       'vibrate': vibrate,
@@ -81,7 +81,7 @@ class BackgroundLocation {
     var result = await _channel.invokeMethod('stop_alarm', <String, dynamic>{
       'id': id ?? currentAlarmId,
     });
-    currentAlarmId = 0;
+    currentAlarmId.value = 0;
     return result == true;
   }
 
@@ -138,6 +138,7 @@ class BackgroundLocation {
       } else if (methodCall.method == 'stop_alarm_from_service') {
         var idData = Map.from(methodCall.arguments);
         stopAlarm(idData['id']);
+        currentAlarmId.value = 0;
       }
     });
   }

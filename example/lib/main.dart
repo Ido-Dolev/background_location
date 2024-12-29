@@ -21,6 +21,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    BackgroundLocation.currentAlarmId.addListener(() {
+      print('stoppped! ${BackgroundLocation.currentAlarmId.value}');
+    });
   }
 
   @override
