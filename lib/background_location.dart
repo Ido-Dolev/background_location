@@ -78,8 +78,8 @@ class BackgroundLocation {
   }
 
   static Future<bool> stopAlarm({int? id}) async {
-    var result = await _channel.invokeMethod('stop_alarm', <String, dynamic>{
-      'id': id ?? currentAlarmId,
+    var result = await _channel.invokeMethod('stop_alarm', <String, int>{
+      'id': id ?? currentAlarmId.value,
     });
     currentAlarmId.value = 0;
     return result == true;
