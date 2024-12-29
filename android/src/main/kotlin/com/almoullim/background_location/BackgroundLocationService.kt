@@ -177,7 +177,8 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
                 call.argument("notification_title"),
                 call.argument("notification_body"),
                 call.argument("stop_button_text"),
-                call.argument("stop_service")
+                call.argument("stop_service"),
+                call.argument("icon"),
             ))
             "stop_alarm" -> result.success(service?.stopAlarm(call.argument("id"), call.argument("stop_service")))
             else -> result.notImplemented()

@@ -59,7 +59,8 @@ class BackgroundLocation {
     required String notificationTitle,
     required String notificationBody,
     required String stopButtonText,
-    bool? stopService = false}) async {
+    bool? stopService = false,
+    String? icon}) async {
     currentAlarmId.value = id;
     var result = await _channel.invokeMethod('start_alarm', <String, dynamic>{
       'id': id,
@@ -70,7 +71,8 @@ class BackgroundLocation {
       'notification_title': notificationTitle,
       'notification_body': notificationBody,
       'stop_button_text': stopButtonText,
-      'stop_service': stopService
+      'stop_service': stopService,
+      'icon': icon
     });
     return result == true;
   }

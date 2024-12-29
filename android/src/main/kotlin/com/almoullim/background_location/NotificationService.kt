@@ -46,22 +46,22 @@ class NotificationHandler(private val context: Context) {
         notification_title: String,
         notification_body: String,
         stop_button_text: String,
-        stopService: Boolean?
+        stopService: Boolean?,
+        icon: String?
     ): Notification {
         val defaultIconResId =
             context.packageManager.getApplicationInfo(context.packageName, 0).icon
-        val iconResId = defaultIconResId
 
-//        val iconResId = if (notificationSettings.icon != null) {
-//            val resId = context.resources.getIdentifier(
-//                notificationSettings.icon,
-//                "drawable",
-//                context.packageName
-//            )
-//            if (resId != 0) resId else defaultIconResId
-//        } else {
-//            defaultIconResId
-//        }
+        val iconResId = if (icon != null) {
+            val resId = context.resources.getIdentifier(
+                icon,
+                "mipmap",
+                context.packageName
+            )
+            if (resId != 0) resId else defaultIconResId
+        } else {
+            defaultIconResId
+        }
 
         val stopIntent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmReceiver.ACTION_ALARM_STOP

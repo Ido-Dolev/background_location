@@ -227,7 +227,8 @@ class LocationUpdatesService : Service() {
         notificationTitle: String?,
         notificationBody: String?,
         stopButtonText: String?,
-        stopService: Boolean?
+        stopService: Boolean?,
+        icon: String?
     ): Boolean {
         if (id == null || isRinging) {
             return false
@@ -258,7 +259,8 @@ class LocationUpdatesService : Service() {
             notificationTitle,
             notificationBody,
             stopButtonText,
-            stopService
+            stopService,
+            icon
         )
         notificationManager.notify(id, notification)
 
