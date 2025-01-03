@@ -264,12 +264,12 @@ class LocationUpdatesService : Service() {
             icon
         )
         notificationManager.notify(id, notification)
+        volumeService?.requestAudioFocus()
         volumeService?.setVolume(
             volume,
             volumeEnforced,
             true,
         )
-        volumeService?.requestAudioFocus()
 
         audioService?.playAudio(
             id,
