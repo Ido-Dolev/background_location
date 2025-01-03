@@ -80,7 +80,7 @@ class VolumeService(context: Context) {
                 .build()
 
             focusRequest =
-                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
                     .setAudioAttributes(audioAttributes)
                     .build()
 
